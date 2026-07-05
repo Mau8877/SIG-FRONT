@@ -8,7 +8,7 @@ import {
 
 import "./index.css"
 import { routeTree } from "./routeTree.gen"
-import { store } from "./store/store"
+import { store } from "./store"
 
 const router = createRouter({
   routeTree,
