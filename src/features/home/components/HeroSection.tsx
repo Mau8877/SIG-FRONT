@@ -9,7 +9,7 @@ import { HeroMapPreview } from "./HeroMapPreview"
 export function HeroSection() {
   return (
     <section className="overflow-hidden bg-background">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:py-24">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:pb-24 lg:pt-14">
         <div className="max-w-3xl">
           <Badge
             variant="outline"

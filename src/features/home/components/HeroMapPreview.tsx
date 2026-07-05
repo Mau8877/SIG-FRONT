@@ -156,27 +156,38 @@ export function HeroMapPreview() {
     setDraggingMarker(false)
   }
 
-  const statusText = drawing
-    ? draft.length === 0
-      ? "Toca el mapa para empezar a dibujar"
-      : "Toca el primer punto para cerrar la zona"
+  const statusTitle = drawing
+    ? "Dibuja una zona segura"
     : closed
-      ? "Zona segura definida - arrastra el pin para probarla"
-      : "Aun no defines una zona segura"
+      ? "Zona segura definida"
+      : "Define una zona segura"
+
+  const statusDescription = drawing
+    ? draft.length === 0
+      ? "Marca puntos sobre el mapa para iniciar."
+      : "Toca cerca del primer punto para cerrar."
+    : closed
+      ? "Arrastra el pin para probar entradas y salidas."
+      : "Crea una geocerca para activar el monitoreo."
 
   return (
     <div className="relative mx-auto w-full max-w-lg select-none">
       <div className="rounded-3xl border border-border bg-background p-4 shadow-xl">
-        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs font-medium leading-5 text-muted-foreground">
-            {statusText}
-          </p>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground">
+              {statusTitle}
+            </p>
+            <p className="mt-1 max-w-[17rem] text-xs leading-5 text-muted-foreground">
+              {statusDescription}
+            </p>
+          </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
             {!drawing && (
               <Button type="button" size="xs" onClick={startDrawing}>
                 <Pencil className="size-3" aria-hidden="true" />
-                {closed ? "Redibujar" : "Dibujar zona"}
+                {closed ? "Editar zona" : "Dibujar zona"}
               </Button>
             )}
 
@@ -220,6 +231,13 @@ export function HeroMapPreview() {
               strokeLinecap="round"
             />
             <path
+              d="M0,80 C100,68 300,96 400,74"
+              stroke="var(--border)"
+              strokeWidth="1.5"
+              strokeDasharray="6 8"
+              fill="none"
+            />
+            <path
               d="M0,182 C120,192 280,164 400,186"
               stroke="var(--background)"
               strokeWidth="12"
@@ -227,11 +245,25 @@ export function HeroMapPreview() {
               strokeLinecap="round"
             />
             <path
+              d="M0,182 C120,192 280,164 400,186"
+              stroke="var(--border)"
+              strokeWidth="1.5"
+              strokeDasharray="6 8"
+              fill="none"
+            />
+            <path
               d="M0,250 L400,244"
               stroke="var(--background)"
               strokeWidth="12"
               fill="none"
               strokeLinecap="round"
+            />
+            <path
+              d="M0,250 L400,244"
+              stroke="var(--border)"
+              strokeWidth="1.5"
+              strokeDasharray="6 8"
+              fill="none"
             />
             <path
               d="M64,300 C94,200 132,100 172,0"
@@ -244,7 +276,7 @@ export function HeroMapPreview() {
               d="M64,300 C94,200 132,100 172,0"
               stroke="var(--border)"
               strokeWidth="1.5"
-              strokeDasharray="6 6"
+              strokeDasharray="6 8"
               fill="none"
             />
             <path
@@ -255,11 +287,25 @@ export function HeroMapPreview() {
               strokeLinecap="round"
             />
             <path
+              d="M226,0 L232,300"
+              stroke="var(--border)"
+              strokeWidth="1.5"
+              strokeDasharray="6 8"
+              fill="none"
+            />
+            <path
               d="M322,0 C312,100 332,200 342,300"
               stroke="var(--background)"
               strokeWidth="11"
               fill="none"
               strokeLinecap="round"
+            />
+            <path
+              d="M322,0 C312,100 332,200 342,300"
+              stroke="var(--border)"
+              strokeWidth="1.5"
+              strokeDasharray="6 8"
+              fill="none"
             />
 
             {draft.length > 0 && (
