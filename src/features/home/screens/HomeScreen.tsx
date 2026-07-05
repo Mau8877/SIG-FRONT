@@ -1,10 +1,13 @@
 import {
   BenefitsSection,
+  FaqSection,
   FooterHome,
   HeaderHome,
   HeroSection,
   HomeCtaSection,
   HowItWorksSection,
+  TrustSignalsSection,
+  UseCasesSection,
 } from "../components"
 
 export function HomeScreen() {
@@ -13,8 +16,11 @@ export function HomeScreen() {
       <HeaderHome />
       <main>
         <HeroSection />
+        <TrustSignalsSection />
         <HowItWorksSection />
         <BenefitsSection />
+        <UseCasesSection />
+        <FaqSection />
         <HomeCtaSection />
       </main>
       <FooterHome />
