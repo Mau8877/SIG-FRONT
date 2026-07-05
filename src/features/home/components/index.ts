@@ -1,0 +1,7 @@
+export * from "./BenefitsSection"
+export * from "./FooterHome"
+export * from "./HeaderHome"
+export * from "./HeroMapPreview"
+export * from "./HeroSection"
+export * from "./HomeCtaSection"
+export * from "./HowItWorksSection"
