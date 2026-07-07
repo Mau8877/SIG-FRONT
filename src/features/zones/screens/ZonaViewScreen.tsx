@@ -12,14 +12,26 @@ import {
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
-import { useGetZonaQuery } from "../api/zonesApi"
+import { useGetZonaQuery, useSyncHorariosMutation } from "../api/zonesApi"
+import { HorariosEditor } from "../components/HorariosEditor"
 import { MapDrawer } from "../components/MapDrawer"
+import { NinosSelector } from "../components/NinosSelector"
+import type { HorarioZona } from "../types"
 
 export function ZonaViewScreen() {
   const navigate = useNavigate()
   const { id } = useParams({ from: "/_authenticated/zones/$id" } as any)
   const zonaId = Number(id)
   const { data: zona, isLoading, isError } = useGetZonaQuery(zonaId)
+  const [syncHorarios, { isLoading: isSyncingHorarios }] = useSyncHorariosMutation()
+
+  async function handleSaveHorarios(horarios: HorarioZona[]) {
+    try {
+      await syncHorarios({ id: zonaId, body: horarios }).unwrap()
+    } catch (err) {
+      console.error("Error al guardar horarios:", err)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -110,6 +122,14 @@ export function ZonaViewScreen() {
           )}
         </CardContent>
       </Card>
+
+      <HorariosEditor
+        horarios={zona.horarios}
+        onSave={handleSaveHorarios}
+        isLoading={isSyncingHorarios}
+      />
+
+      <NinosSelector idZona={zonaId} ninosAsociados={zona.ninos_asociados} />
     </section>
   )
 }

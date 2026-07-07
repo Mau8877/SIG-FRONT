@@ -1,7 +1,7 @@
 import { appApi } from "@/src/store/api"
 import type { PaginatedResponse } from "@/src/types/api"
 
-import type { ZonaSegura, ZonaPayload, ZonaUpdatePayload } from "../types"
+import type { ZonaSegura, ZonaPayload, ZonaUpdatePayload, HorarioZona } from "../types"
 
 export type GetZonasParams = {
   page?: number
@@ -72,6 +72,39 @@ export const zonesApi = appApi.injectEndpoints({
         { type: "Zona", id: "LIST" },
       ],
     }),
+    syncHorarios: builder.mutation<ZonaSegura, { id: number; body: HorarioZona[] }>({
+      query: ({ id, body }) => ({
+        url: `/zones/zonas/${id}/horarios/`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Zona", id },
+        { type: "Zona", id: "LIST" },
+      ],
+    }),
+    vincularNino: builder.mutation<ZonaSegura, { id: number; id_nino: number }>({
+      query: ({ id, id_nino }) => ({
+        url: `/zones/zonas/${id}/vincular_nino/`,
+        method: "POST",
+        body: { id_nino },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Zona", id },
+        { type: "Zona", id: "LIST" },
+      ],
+    }),
+    desactivarNino: builder.mutation<ZonaSegura, { id: number; id_nino: number }>({
+      query: ({ id, id_nino }) => ({
+        url: `/zones/zonas/${id}/desactivar_nino/`,
+        method: "POST",
+        body: { id_nino },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Zona", id },
+        { type: "Zona", id: "LIST" },
+      ],
+    }),
   }),
 })
 
@@ -82,6 +115,9 @@ export const {
   useUpdateZonaMutation,
   useDeactivateZonaMutation,
   useReactivateZonaMutation,
+  useSyncHorariosMutation,
+  useVincularNinoMutation,
+  useDesactivarNinoMutation,
 } = zonesApi
 
 export function getZonaId(zona: ZonaSegura) {

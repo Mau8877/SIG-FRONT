@@ -12,9 +12,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { getApiErrorMessage } from "@/src/lib/apiError"
 
-import { useGetZonaQuery, useUpdateZonaMutation } from "../api/zonesApi"
+import { useGetZonaQuery, useUpdateZonaMutation, useSyncHorariosMutation } from "../api/zonesApi"
+import { HorariosEditor } from "../components/HorariosEditor"
+import { NinosSelector } from "../components/NinosSelector"
 import { ZonaForm } from "../components/ZonaForm"
-import type { ZonaPayload } from "../types"
+import type { ZonaPayload, HorarioZona } from "../types"
 
 export function ZonaEditScreen() {
   const navigate = useNavigate()
@@ -22,6 +24,7 @@ export function ZonaEditScreen() {
   const zonaId = Number(id)
   const { data: zona, isLoading: isFetching, isError } = useGetZonaQuery(zonaId)
   const [updateZona, { isLoading: isUpdating }] = useUpdateZonaMutation()
+  const [syncHorarios, { isLoading: isSyncingHorarios }] = useSyncHorariosMutation()
   const [error, setError] = useState<string | null>(null)
 
   async function handleUpdate(values: ZonaPayload) {
@@ -31,6 +34,14 @@ export function ZonaEditScreen() {
       void navigate({ to: "/zones/$id", params: { id: String(zonaId) } as any })
     } catch (err) {
       setError(getApiErrorMessage(err, "No se pudo actualizar la zona segura."))
+    }
+  }
+
+  async function handleSaveHorarios(horarios: HorarioZona[]) {
+    try {
+      await syncHorarios({ id: zonaId, body: horarios }).unwrap()
+    } catch (err) {
+      console.error("Error al guardar horarios:", err)
     }
   }
 
@@ -106,6 +117,17 @@ export function ZonaEditScreen() {
           />
         </CardContent>
       </Card>
+
+      <HorariosEditor
+        horarios={zona.horarios}
+        onSave={handleSaveHorarios}
+        isLoading={isSyncingHorarios}
+      />
+
+      <NinosSelector
+        idZona={zonaId}
+        ninosAsociados={zona.ninos_asociados}
+      />
     </section>
   )
 }
