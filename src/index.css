@@ -234,4 +234,13 @@ code {
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Fix Leaflet z-index bleeding over Tailwind modals (z-50) */
+  .leaflet-container,
+  .leaflet-pane,
+  .leaflet-top,
+  .leaflet-bottom,
+  .leaflet-control {
+    z-index: 10 !important;
+  }
 }

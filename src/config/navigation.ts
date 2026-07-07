@@ -3,6 +3,7 @@ import {
   ClipboardList,
   LayoutDashboard,
   LogIn,
+  MapPin,
   type LucideIcon,
 } from "lucide-react"
 
@@ -30,6 +31,12 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     label: "Mis Ninos",
     route: "/children",
     icon: Baby,
+    allowedRoles: [USER_ROLES.TUTOR],
+  },
+  {
+    label: "Zonas Seguras",
+    route: "/zones",
+    icon: MapPin,
     allowedRoles: [USER_ROLES.TUTOR],
   },
   {

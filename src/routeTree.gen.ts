@@ -18,6 +18,10 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedChildrenRouteImport } from './routes/_authenticated/children'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedAccessAuditRouteImport } from './routes/_authenticated/access-audit'
+import { Route as AuthenticatedZonesIndexRouteImport } from './routes/_authenticated/zones.index'
+import { Route as AuthenticatedZonesCreateRouteImport } from './routes/_authenticated/zones.create'
+import { Route as AuthenticatedZonesIdRouteImport } from './routes/_authenticated/zones.$id'
+import { Route as AuthenticatedZonesIdEditRouteImport } from './routes/_authenticated/zones.$id.edit'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -64,6 +68,28 @@ const AuthenticatedAccessAuditRoute =
     path: '/access-audit',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedZonesIndexRoute = AuthenticatedZonesIndexRouteImport.update({
+  id: '/zones/',
+  path: '/zones/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedZonesCreateRoute =
+  AuthenticatedZonesCreateRouteImport.update({
+    id: '/zones/create',
+    path: '/zones/create',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedZonesIdRoute = AuthenticatedZonesIdRouteImport.update({
+  id: '/zones/$id',
+  path: '/zones/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedZonesIdEditRoute =
+  AuthenticatedZonesIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => AuthenticatedZonesIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +100,10 @@ export interface FileRoutesByFullPath {
   '/forbidden': typeof AuthenticatedForbiddenRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
+  '/zones/$id': typeof AuthenticatedZonesIdRouteWithChildren
+  '/zones/create': typeof AuthenticatedZonesCreateRoute
+  '/zones/': typeof AuthenticatedZonesIndexRoute
+  '/zones/$id/edit': typeof AuthenticatedZonesIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,6 +114,10 @@ export interface FileRoutesByTo {
   '/forbidden': typeof AuthenticatedForbiddenRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
+  '/zones/$id': typeof AuthenticatedZonesIdRouteWithChildren
+  '/zones/create': typeof AuthenticatedZonesCreateRoute
+  '/zones': typeof AuthenticatedZonesIndexRoute
+  '/zones/$id/edit': typeof AuthenticatedZonesIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,6 +130,10 @@ export interface FileRoutesById {
   '/_authenticated/forbidden': typeof AuthenticatedForbiddenRoute
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
+  '/_authenticated/zones/$id': typeof AuthenticatedZonesIdRouteWithChildren
+  '/_authenticated/zones/create': typeof AuthenticatedZonesCreateRoute
+  '/_authenticated/zones/': typeof AuthenticatedZonesIndexRoute
+  '/_authenticated/zones/$id/edit': typeof AuthenticatedZonesIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +146,10 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/login'
     | '/register'
+    | '/zones/$id'
+    | '/zones/create'
+    | '/zones/'
+    | '/zones/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +160,10 @@ export interface FileRouteTypes {
     | '/forbidden'
     | '/login'
     | '/register'
+    | '/zones/$id'
+    | '/zones/create'
+    | '/zones'
+    | '/zones/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -129,6 +175,10 @@ export interface FileRouteTypes {
     | '/_authenticated/forbidden'
     | '/_public/login'
     | '/_public/register'
+    | '/_authenticated/zones/$id'
+    | '/_authenticated/zones/create'
+    | '/_authenticated/zones/'
+    | '/_authenticated/zones/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -203,8 +253,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccessAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/zones/': {
+      id: '/_authenticated/zones/'
+      path: '/zones'
+      fullPath: '/zones/'
+      preLoaderRoute: typeof AuthenticatedZonesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/zones/create': {
+      id: '/_authenticated/zones/create'
+      path: '/zones/create'
+      fullPath: '/zones/create'
+      preLoaderRoute: typeof AuthenticatedZonesCreateRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/zones/$id': {
+      id: '/_authenticated/zones/$id'
+      path: '/zones/$id'
+      fullPath: '/zones/$id'
+      preLoaderRoute: typeof AuthenticatedZonesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/zones/$id/edit': {
+      id: '/_authenticated/zones/$id/edit'
+      path: '/edit'
+      fullPath: '/zones/$id/edit'
+      preLoaderRoute: typeof AuthenticatedZonesIdEditRouteImport
+      parentRoute: typeof AuthenticatedZonesIdRoute
+    }
   }
 }
+
+interface AuthenticatedZonesIdRouteChildren {
+  AuthenticatedZonesIdEditRoute: typeof AuthenticatedZonesIdEditRoute
+}
+
+const AuthenticatedZonesIdRouteChildren: AuthenticatedZonesIdRouteChildren = {
+  AuthenticatedZonesIdEditRoute: AuthenticatedZonesIdEditRoute,
+}
+
+const AuthenticatedZonesIdRouteWithChildren =
+  AuthenticatedZonesIdRoute._addFileChildren(AuthenticatedZonesIdRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccessAuditRoute: typeof AuthenticatedAccessAuditRoute
@@ -212,6 +301,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChildrenRoute: typeof AuthenticatedChildrenRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedForbiddenRoute: typeof AuthenticatedForbiddenRoute
+  AuthenticatedZonesIdRoute: typeof AuthenticatedZonesIdRouteWithChildren
+  AuthenticatedZonesCreateRoute: typeof AuthenticatedZonesCreateRoute
+  AuthenticatedZonesIndexRoute: typeof AuthenticatedZonesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -220,6 +312,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChildrenRoute: AuthenticatedChildrenRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedForbiddenRoute: AuthenticatedForbiddenRoute,
+  AuthenticatedZonesIdRoute: AuthenticatedZonesIdRouteWithChildren,
+  AuthenticatedZonesCreateRoute: AuthenticatedZonesCreateRoute,
+  AuthenticatedZonesIndexRoute: AuthenticatedZonesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
