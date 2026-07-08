@@ -44,7 +44,7 @@ export function UseCasesSection() {
               Pensado para rutinas reales, no para vigilar de mas
             </h2>
             <p className="mt-4 text-base leading-7 text-muted-foreground">
-              SIG ayuda a transformar ubicaciones y recorridos en informacion
+              Miraki ayuda a transformar ubicaciones y recorridos en informacion
               simple para tomar decisiones con calma.
             </p>
 

@@ -18,9 +18,8 @@ export function HeaderHome() {
           className="flex items-center gap-2 text-lg font-bold text-foreground"
         >
           <span className="flex size-9 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">
-            SIG
+            Miraki
           </span>
-          <span className="font-heading">SIG</span>
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
