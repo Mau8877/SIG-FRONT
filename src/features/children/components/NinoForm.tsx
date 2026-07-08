@@ -6,30 +6,35 @@ import { Label } from "@/components/ui/label"
 
 import { ninoSchema, type NinoFormValues } from "../schemas"
 import type { NinoPayload } from "../types"
+import { ChildPhotoPicker } from "./ChildPhotoPicker"
 
 type NinoFormProps = {
   initialValues?: NinoFormValues
+  currentPhotoUrl?: string | null
   submitLabel: string
   isSubmitting: boolean
   onSubmit: (values: NinoPayload) => Promise<void>
   onCancel: () => void
+  onRemovePhoto?: () => void
 }
 
 const emptyValues: NinoFormValues = {
   nombre: "",
   fecha_nacimiento: "",
-  foto_url: "",
 }
 
 export function NinoForm({
   initialValues,
+  currentPhotoUrl,
   submitLabel,
   isSubmitting,
   onSubmit,
   onCancel,
+  onRemovePhoto,
 }: NinoFormProps) {
   const [values, setValues] = useState<NinoFormValues>(initialValues ?? emptyValues)
   const [errors, setErrors] = useState<Partial<Record<keyof NinoFormValues, string>>>({})
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -54,7 +59,7 @@ export function NinoForm({
     await onSubmit({
       nombre: parsed.data.nombre,
       fecha_nacimiento: parsed.data.fecha_nacimiento,
-      foto_url: parsed.data.foto_url || "",
+      foto: photoFile,
     })
   }
 
@@ -77,12 +82,12 @@ export function NinoForm({
           setValues((current) => ({ ...current, fecha_nacimiento: value }))
         }
       />
-      <FormInput
-        id="foto_url"
-        label="URL de foto opcional"
-        value={values.foto_url ?? ""}
-        error={errors.foto_url}
-        onChange={(value) => setValues((current) => ({ ...current, foto_url: value }))}
+      <ChildPhotoPicker
+        childName={values.nombre}
+        currentPhotoUrl={currentPhotoUrl}
+        selectedFile={photoFile}
+        onFileChange={setPhotoFile}
+        onRemoveCurrentPhoto={currentPhotoUrl ? onRemovePhoto : undefined}
       />
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" onClick={onCancel}>

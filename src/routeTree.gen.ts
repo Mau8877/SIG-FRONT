@@ -16,6 +16,7 @@ import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthenticatedForbiddenRouteImport } from './routes/_authenticated/forbidden'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChildrenRouteImport } from './routes/_authenticated/children'
+import { Route as AuthenticatedCenterChildrenRouteImport } from './routes/_authenticated/center-children'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedAccessAuditRouteImport } from './routes/_authenticated/access-audit'
 import { Route as AuthenticatedZonesIndexRouteImport } from './routes/_authenticated/zones.index'
@@ -57,6 +58,12 @@ const AuthenticatedChildrenRoute = AuthenticatedChildrenRouteImport.update({
   path: '/children',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCenterChildrenRoute =
+  AuthenticatedCenterChildrenRouteImport.update({
+    id: '/center-children',
+    path: '/center-children',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/access-audit': typeof AuthenticatedAccessAuditRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/center-children': typeof AuthenticatedCenterChildrenRoute
   '/children': typeof AuthenticatedChildrenRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/forbidden': typeof AuthenticatedForbiddenRoute
@@ -109,6 +117,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/access-audit': typeof AuthenticatedAccessAuditRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/center-children': typeof AuthenticatedCenterChildrenRoute
   '/children': typeof AuthenticatedChildrenRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/forbidden': typeof AuthenticatedForbiddenRoute
@@ -125,6 +134,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/access-audit': typeof AuthenticatedAccessAuditRoute
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/center-children': typeof AuthenticatedCenterChildrenRoute
   '/_authenticated/children': typeof AuthenticatedChildrenRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/forbidden': typeof AuthenticatedForbiddenRoute
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/'
     | '/access-audit'
     | '/audit'
+    | '/center-children'
     | '/children'
     | '/dashboard'
     | '/forbidden'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/access-audit'
     | '/audit'
+    | '/center-children'
     | '/children'
     | '/dashboard'
     | '/forbidden'
@@ -170,6 +182,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authenticated/access-audit'
     | '/_authenticated/audit'
+    | '/_authenticated/center-children'
     | '/_authenticated/children'
     | '/_authenticated/dashboard'
     | '/_authenticated/forbidden'
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChildrenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/center-children': {
+      id: '/_authenticated/center-children'
+      path: '/center-children'
+      fullPath: '/center-children'
+      preLoaderRoute: typeof AuthenticatedCenterChildrenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/audit': {
       id: '/_authenticated/audit'
       path: '/audit'
@@ -298,6 +318,7 @@ const AuthenticatedZonesIdRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccessAuditRoute: typeof AuthenticatedAccessAuditRoute
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedCenterChildrenRoute: typeof AuthenticatedCenterChildrenRoute
   AuthenticatedChildrenRoute: typeof AuthenticatedChildrenRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedForbiddenRoute: typeof AuthenticatedForbiddenRoute
@@ -309,6 +330,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccessAuditRoute: AuthenticatedAccessAuditRoute,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedCenterChildrenRoute: AuthenticatedCenterChildrenRoute,
   AuthenticatedChildrenRoute: AuthenticatedChildrenRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedForbiddenRoute: AuthenticatedForbiddenRoute,

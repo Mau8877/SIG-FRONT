@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   LogIn,
   MapPin,
+  School,
   type LucideIcon,
 } from "lucide-react"
 
@@ -32,6 +33,12 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     route: "/children",
     icon: Baby,
     allowedRoles: [USER_ROLES.TUTOR],
+  },
+  {
+    label: "Ninos del Centro",
+    route: "/center-children",
+    icon: School,
+    allowedRoles: [USER_ROLES.ADMIN_CENTRO],
   },
   {
     label: "Zonas Seguras",

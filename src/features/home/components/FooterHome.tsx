@@ -13,11 +13,8 @@ export function FooterHome() {
           <div>
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                SIG
+                Miraki
               </span>
-              <p className="font-heading text-lg font-bold text-foreground">
-                SIG
-              </p>
             </div>
             <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">
               Plataforma de monitoreo geografico orientada a seguridad
@@ -74,7 +71,7 @@ export function FooterHome() {
         <Separator className="my-8" />
 
         <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>(c) {currentYear} SIG. Todos los derechos reservados.</p>
+          <p>(c) {currentYear} Miraki. Todos los derechos reservados.</p>
           <p>Seguridad familiar con informacion clara y accionable.</p>
         </div>
       </div>
