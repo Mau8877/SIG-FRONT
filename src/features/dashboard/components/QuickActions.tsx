@@ -13,7 +13,7 @@ import {
 type QuickAction = {
   label: string
   description: string
-  to: "/children" | "/center-children"
+  to: "/children" | "/center-children" | "/zones"
   icon: LucideIcon
 }
 

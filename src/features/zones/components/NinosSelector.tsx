@@ -4,8 +4,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useGetNinosQuery } from "@/src/features/children"
+import { USER_ROLES } from "@/src/config/roles"
+import { selectAuthUser } from "@/src/features/auth"
+import { useGetNinosQuery, useGetInstitutionChildrenQuery } from "@/src/features/children"
 import { getApiErrorMessage } from "@/src/lib/apiError"
+import { useAppSelector } from "@/src/store/hooks"
 
 import { useVincularNinoMutation, useDesactivarNinoMutation } from "../api/zonesApi"
 import type { NinoAsociado } from "../types"
@@ -21,8 +24,14 @@ export function NinosSelector({
   ninosAsociados = [],
   readOnly = false,
 }: NinosSelectorProps) {
-  // Manejo tolerante de errores por si el módulo de niños está incompleto o falla
-  const { data: ninosData, isLoading: loadingNinos, isError, error } = useGetNinosQuery()
+  const user = useAppSelector(selectAuthUser)
+  const isAdminCentro = user?.rol === USER_ROLES.ADMIN_CENTRO
+
+  const tutorQuery = useGetNinosQuery(undefined, { skip: isAdminCentro })
+  const centroQuery = useGetInstitutionChildrenQuery(undefined, { skip: !isAdminCentro })
+  const activeQuery = isAdminCentro ? centroQuery : tutorQuery
+
+  const { data: ninosData, isLoading: loadingNinos, isError, error } = activeQuery
   const [vincularNino, { isLoading: vinculando }] = useVincularNinoMutation()
   const [desactivarNino, { isLoading: desactivando }] = useDesactivarNinoMutation()
 
@@ -61,7 +70,7 @@ export function NinosSelector({
           </Badge>
         </div>
         <CardDescription className="text-slate-600 text-sm mt-1">
-          Asocia esta zona segura a tus hijos para que el sistema emita alertas cuando entren o salgan del área.
+          Asocia esta zona segura a los niños para que el sistema emita alertas cuando entren o salgan del área.
         </CardDescription>
       </CardHeader>
 
@@ -78,18 +87,22 @@ export function NinosSelector({
             <div>
               <p className="font-semibold text-slate-700">Módulo de niños no disponible temporalmente</p>
               <p className="text-slate-500 mt-0.5">
-                No se pudo obtener la lista de niños ({isError ? getApiErrorMessage(error) : "Sin datos"}). Si el módulo está en configuración por otro miembro del equipo, podrás vincular a tus hijos más adelante sin afectar esta zona.
+                No se pudo obtener la lista de niños ({isError ? getApiErrorMessage(error) : "Sin datos"}). Podrás vincular niños más adelante sin afectar esta zona.
               </p>
             </div>
           </div>
         ) : ninosList.length === 0 ? (
-          /* Estado sin niños registrados en el tutor */
+          /* Estado sin niños registrados en la cuenta/institución */
           <div className="flex items-start gap-3 p-4 bg-blue-50/80 border border-blue-200 rounded-lg text-blue-800 text-sm">
             <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold">Sin niños registrados en tu cuenta</p>
+              <p className="font-semibold">
+                {isAdminCentro ? "Sin niños vinculados a tu institución" : "Sin niños registrados en tu cuenta"}
+              </p>
               <p className="text-blue-700 mt-0.5">
-                Para vigilar a tus hijos en esta zona, primero debes registrarlos en la sección de Niños. Una vez agregados, aparecerán aquí listos para ser vinculados.
+                {isAdminCentro
+                  ? "Para monitorear niños en este perímetro, primero deben estar asociados a tu centro educativo en la sección de Niños del Centro."
+                  : "Para vigilar a tus hijos en esta zona, primero debes registrarlos en la sección de Niños. Una vez agregados, aparecerán aquí listos para ser vinculados."}
               </p>
             </div>
           </div>

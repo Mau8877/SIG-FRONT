@@ -221,31 +221,35 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
       <div
         ref={containerRef}
         style={{ height }}
-        className="w-full rounded-lg border border-border overflow-hidden"
+        className={`w-full rounded-lg border border-border overflow-hidden ${
+          !readOnly
+            ? "[&_.leaflet-container]:cursor-crosshair! [&_.leaflet-interactive]:cursor-crosshair! [&_.leaflet-grab]:cursor-crosshair!"
+            : ""
+        }`}
       />
 
       {!readOnly && (
-        <div className="flex items-center gap-3">
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+          <p className="text-sm font-medium text-slate-700">
             {pointCount === 0
-              ? "Haz clic en el mapa para agregar vértices del polígono."
-              : `${pointCount} punto${pointCount !== 1 ? "s" : ""} marcado${pointCount !== 1 ? "s" : ""}. Mínimo 3 para confirmar.`}
+              ? "📍 Haz clic en el mapa para marcar los vértices de tu zona."
+              : `📍 ${pointCount} punto${pointCount !== 1 ? "s" : ""} marcado${pointCount !== 1 ? "s" : ""}. Mínimo 3 para confirmar el perímetro.`}
           </p>
-          <div className="ml-auto flex gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             {pointCount >= 3 && (
               <button
                 type="button"
                 onClick={confirmPolygon}
-                className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
+                className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 transition-colors"
               >
-                Confirmar zona
+                ✓ Confirmar zona
               </button>
             )}
             {pointCount > 0 && (
               <button
                 type="button"
                 onClick={clearPolygon}
-                className="rounded-md border border-destructive/50 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10"
+                className="rounded-md border border-destructive/50 bg-destructive/5 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
               >
                 Limpiar
               </button>
