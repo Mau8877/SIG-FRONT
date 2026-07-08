@@ -1,9 +1,12 @@
 import {
   Baby,
+  Bell,
+  Building2,
   ClipboardList,
   LayoutDashboard,
   LogIn,
   MapPin,
+  Route,
   School,
   type LucideIcon,
 } from "lucide-react"
@@ -41,6 +44,18 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     allowedRoles: [USER_ROLES.ADMIN_CENTRO],
   },
   {
+    label: "Mi Centro",
+    route: "/center",
+    icon: Building2,
+    allowedRoles: [USER_ROLES.ADMIN_CENTRO],
+  },
+  {
+    label: "Mapa del Centro",
+    route: "/center-map",
+    icon: MapPin,
+    allowedRoles: [USER_ROLES.ADMIN_CENTRO],
+  },
+  {
     label: "Zonas Seguras",
     route: "/zones",
     icon: MapPin,
@@ -48,6 +63,18 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
       USER_ROLES.TUTOR,
       USER_ROLES.ADMIN_CENTRO,
     ],
+  },
+  {
+    label: "Alertas",
+    route: "/alerts",
+    icon: Bell,
+    allowedRoles: [USER_ROLES.TUTOR],
+  },
+  {
+    label: "Historial de Rutas",
+    route: "/route-history",
+    icon: Route,
+    allowedRoles: [USER_ROLES.TUTOR],
   },
   {
     label: "Bitacora General",
