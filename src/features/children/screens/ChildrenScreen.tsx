@@ -39,9 +39,11 @@ import {
   useUpdateNinoMutation,
 } from "../api/childrenApi"
 import { AssignCenterDialog } from "../components/AssignCenterDialog"
+import { ChildAvatar } from "../components/ChildAvatar"
 import { ChildCenterInfo } from "../components/ChildCenterInfo"
 import { NinoForm } from "../components/NinoForm"
 import { RemoveCenterDialog } from "../components/RemoveCenterDialog"
+import { RemovePhotoDialog } from "../components/RemovePhotoDialog"
 import type { Nino, NinoPayload } from "../types"
 
 export function ChildrenScreen() {
@@ -52,9 +54,11 @@ export function ChildrenScreen() {
   const [deactivateTarget, setDeactivateTarget] = useState<Nino | null>(null)
   const [assignCenterTarget, setAssignCenterTarget] = useState<Nino | null>(null)
   const [removeCenterTarget, setRemoveCenterTarget] = useState<Nino | null>(null)
+  const [removePhotoTarget, setRemovePhotoTarget] = useState<Nino | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [removeCenterError, setRemoveCenterError] = useState<string | null>(null)
+  const [removePhotoError, setRemovePhotoError] = useState<string | null>(null)
   const { data, isLoading, isError, refetch } = useGetNinosQuery({
     page,
     includeInactive,
@@ -73,8 +77,16 @@ export function ChildrenScreen() {
     try {
       await createNino(values).unwrap()
       setShowCreate(false)
+      setSuccess("Nino registrado correctamente.")
     } catch (createError) {
-      setError(getApiErrorMessage(createError, "No se pudo registrar el nino."))
+      setError(
+        getApiErrorMessage(
+          createError,
+          values.foto
+            ? "No se pudo guardar la fotografia."
+            : "No se pudo registrar el nino.",
+        ),
+      )
     }
   }
 
@@ -89,8 +101,20 @@ export function ChildrenScreen() {
     try {
       await updateNino({ id: getNinoId(editingNino), body: values }).unwrap()
       setEditingNino(null)
+      setSuccess(
+        values.foto
+          ? "Foto actualizada correctamente."
+          : "Nino actualizado correctamente.",
+      )
     } catch (updateError) {
-      setError(getApiErrorMessage(updateError, "No se pudo actualizar el nino."))
+      setError(
+        getApiErrorMessage(
+          updateError,
+          values.foto
+            ? "No se pudo guardar la fotografia."
+            : "No se pudo actualizar el nino.",
+        ),
+      )
     }
   }
 
@@ -237,12 +261,16 @@ export function ChildrenScreen() {
               initialValues={{
                 nombre: editingNino.nombre,
                 fecha_nacimiento: editingNino.fecha_nacimiento ?? "",
-                foto_url: editingNino.foto_url ?? "",
               }}
+              currentPhotoUrl={editingNino.foto_url}
               submitLabel="Guardar cambios"
               isSubmitting={updateState.isLoading}
               onCancel={() => setEditingNino(null)}
               onSubmit={handleUpdate}
+              onRemovePhoto={() => {
+                setRemovePhotoError(null)
+                setRemovePhotoTarget(editingNino)
+              }}
             />
           </DialogContent>
         ) : null}
@@ -297,6 +325,23 @@ export function ChildrenScreen() {
           setSuccess(message)
         }}
       />
+
+      <RemovePhotoDialog
+        nino={removePhotoTarget}
+        error={removePhotoError}
+        open={Boolean(removePhotoTarget)}
+        onOpenChange={(open) => !open && setRemovePhotoTarget(null)}
+        onError={setRemovePhotoError}
+        onSuccess={(nino, message) => {
+          setError(null)
+          setSuccess(message)
+          setEditingNino((current) =>
+            current && getNinoId(current) === getNinoId(nino)
+              ? { ...current, foto_url: null }
+              : current,
+          )
+        }}
+      />
     </section>
   )
 }
@@ -324,9 +369,14 @@ function NinoCard({
     <Card>
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <CardTitle>{nino.nombre}</CardTitle>
-            <CardDescription>Nacimiento: {nino.fecha_nacimiento}</CardDescription>
+          <div className="flex min-w-0 items-start gap-3">
+            <ChildAvatar name={nino.nombre} photoUrl={nino.foto_url} />
+            <div className="min-w-0">
+              <CardTitle className="break-words">{nino.nombre}</CardTitle>
+              <CardDescription>
+                Nacimiento: {nino.fecha_nacimiento ?? "Sin fecha registrada"}
+              </CardDescription>
+            </div>
           </div>
           <Badge variant={active ? "default" : "outline"}>
             {active ? "Activo" : "Inactivo"}

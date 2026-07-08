@@ -106,19 +106,31 @@ export const childrenApi = appApi.injectEndpoints({
       query: (body) => ({
         url: "/children/ninos/",
         method: "POST",
-        body,
+        body: toNinoFormData(body),
       }),
       invalidatesTags: [{ type: "Nino", id: "LIST" }],
     }),
-    updateNino: builder.mutation<Nino, { id: number; body: Partial<NinoPayload> }>({
+    updateNino: builder.mutation<Nino, { id: number; body: NinoPayload }>({
       query: ({ id, body }) => ({
         url: `/children/ninos/${id}/`,
         method: "PATCH",
-        body,
+        body: toNinoFormData(body),
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Nino", id },
         { type: "Nino", id: "LIST" },
+        { type: "InstitutionChildren", id: "LIST" },
+      ],
+    }),
+    removeNinoPhoto: builder.mutation<unknown, number>({
+      query: (id) => ({
+        url: `/children/ninos/${id}/remove-photo/`,
+        method: "POST",
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Nino", id },
+        { type: "Nino", id: "LIST" },
+        { type: "InstitutionChildren", id: "LIST" },
       ],
     }),
     deactivateNino: builder.mutation<unknown, number>({
@@ -153,10 +165,24 @@ export const {
   useGetNinoQuery,
   useGetNinosQuery,
   useRemoveNinoCenterMutation,
+  useRemoveNinoPhotoMutation,
   useReactivateNinoMutation,
   useUpdateNinoMutation,
 } = childrenApi
 
 export function getNinoId(nino: Nino) {
   return nino.id_nino ?? nino.id ?? 0
+}
+
+function toNinoFormData(values: NinoPayload) {
+  const formData = new FormData()
+
+  formData.append("nombre", values.nombre)
+  formData.append("fecha_nacimiento", values.fecha_nacimiento)
+
+  if (values.foto) {
+    formData.append("foto", values.foto)
+  }
+
+  return formData
 }

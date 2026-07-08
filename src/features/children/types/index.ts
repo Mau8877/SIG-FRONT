@@ -16,7 +16,7 @@ export type Nino = {
 export type NinoPayload = {
   nombre: string
   fecha_nacimiento: string
-  foto_url?: string
+  foto?: File | null
 }
 
 export type CentroEducativoSelection = {

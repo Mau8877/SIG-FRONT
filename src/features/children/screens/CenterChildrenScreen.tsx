@@ -21,6 +21,7 @@ import {
 import { PaginationControls } from "@/src/components/Pagination"
 
 import { getNinoId, useGetInstitutionChildrenQuery } from "../api/childrenApi"
+import { ChildAvatar } from "../components/ChildAvatar"
 import type { Nino } from "../types"
 
 export function CenterChildrenScreen() {
@@ -128,17 +129,7 @@ export function CenterChildrenScreen() {
 function ChildIdentity({ nino }: { nino: Nino }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
-      {nino.foto_url ? (
-        <img
-          src={nino.foto_url}
-          alt={nino.nombre}
-          className="size-10 shrink-0 rounded-full border border-border object-cover"
-        />
-      ) : (
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-sm font-medium text-muted-foreground">
-          {nino.nombre.slice(0, 1).toUpperCase()}
-        </div>
-      )}
+      <ChildAvatar name={nino.nombre} photoUrl={nino.foto_url} className="size-10" />
       <div className="min-w-0">
         <p className="break-words font-medium text-foreground">{nino.nombre}</p>
         <p className="text-xs text-muted-foreground">ID #{getNinoId(nino)}</p>

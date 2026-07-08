@@ -12,7 +12,6 @@ export const ninoSchema = z.object({
       const date = new Date(`${value}T00:00:00`)
       return !Number.isNaN(date.getTime()) && date <= today
     }, "La fecha no puede ser futura."),
-  foto_url: z.string().optional(),
 })
 
 export type NinoFormValues = z.infer<typeof ninoSchema>
