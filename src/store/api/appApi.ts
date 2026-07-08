@@ -8,6 +8,6 @@ export const appApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1",
     timeout: Number(import.meta.env.VITE_API_TIMEOUT) || 60000,
   }),
-  tagTypes: ["Nino", "Audit", "AccessAudit", "Zona", "Center", "InstitutionChildren"],
+  tagTypes: ["Nino", "Audit", "AccessAudit", "Zona", "Center", "InstitutionChildren", "Alerta"],
   endpoints: () => ({}),
 })
