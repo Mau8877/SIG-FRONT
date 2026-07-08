@@ -13,11 +13,15 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as AuthenticatedRouteHistoryRouteImport } from './routes/_authenticated/route-history'
 import { Route as AuthenticatedForbiddenRouteImport } from './routes/_authenticated/forbidden'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChildrenRouteImport } from './routes/_authenticated/children'
+import { Route as AuthenticatedCenterMapRouteImport } from './routes/_authenticated/center-map'
 import { Route as AuthenticatedCenterChildrenRouteImport } from './routes/_authenticated/center-children'
+import { Route as AuthenticatedCenterRouteImport } from './routes/_authenticated/center'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
+import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedAccessAuditRouteImport } from './routes/_authenticated/access-audit'
 import { Route as AuthenticatedZonesIndexRouteImport } from './routes/_authenticated/zones.index'
 import { Route as AuthenticatedZonesCreateRouteImport } from './routes/_authenticated/zones.create'
@@ -43,6 +47,12 @@ const PublicLoginRoute = PublicLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteHistoryRoute =
+  AuthenticatedRouteHistoryRouteImport.update({
+    id: '/route-history',
+    path: '/route-history',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedForbiddenRoute = AuthenticatedForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
@@ -58,15 +68,30 @@ const AuthenticatedChildrenRoute = AuthenticatedChildrenRouteImport.update({
   path: '/children',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCenterMapRoute = AuthenticatedCenterMapRouteImport.update({
+  id: '/center-map',
+  path: '/center-map',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCenterChildrenRoute =
   AuthenticatedCenterChildrenRouteImport.update({
     id: '/center-children',
     path: '/center-children',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCenterRoute = AuthenticatedCenterRouteImport.update({
+  id: '/center',
+  path: '/center',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAccessAuditRoute =
@@ -101,11 +126,15 @@ const AuthenticatedZonesIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/access-audit': typeof AuthenticatedAccessAuditRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/center': typeof AuthenticatedCenterRoute
   '/center-children': typeof AuthenticatedCenterChildrenRoute
+  '/center-map': typeof AuthenticatedCenterMapRoute
   '/children': typeof AuthenticatedChildrenRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/forbidden': typeof AuthenticatedForbiddenRoute
+  '/route-history': typeof AuthenticatedRouteHistoryRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/zones/$id': typeof AuthenticatedZonesIdRouteWithChildren
@@ -116,11 +145,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/access-audit': typeof AuthenticatedAccessAuditRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
   '/audit': typeof AuthenticatedAuditRoute
+  '/center': typeof AuthenticatedCenterRoute
   '/center-children': typeof AuthenticatedCenterChildrenRoute
+  '/center-map': typeof AuthenticatedCenterMapRoute
   '/children': typeof AuthenticatedChildrenRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/forbidden': typeof AuthenticatedForbiddenRoute
+  '/route-history': typeof AuthenticatedRouteHistoryRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/zones/$id': typeof AuthenticatedZonesIdRouteWithChildren
@@ -133,11 +166,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/access-audit': typeof AuthenticatedAccessAuditRoute
+  '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/center': typeof AuthenticatedCenterRoute
   '/_authenticated/center-children': typeof AuthenticatedCenterChildrenRoute
+  '/_authenticated/center-map': typeof AuthenticatedCenterMapRoute
   '/_authenticated/children': typeof AuthenticatedChildrenRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/forbidden': typeof AuthenticatedForbiddenRoute
+  '/_authenticated/route-history': typeof AuthenticatedRouteHistoryRoute
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_authenticated/zones/$id': typeof AuthenticatedZonesIdRouteWithChildren
@@ -150,11 +187,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/access-audit'
+    | '/alerts'
     | '/audit'
+    | '/center'
     | '/center-children'
+    | '/center-map'
     | '/children'
     | '/dashboard'
     | '/forbidden'
+    | '/route-history'
     | '/login'
     | '/register'
     | '/zones/$id'
@@ -165,11 +206,15 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/access-audit'
+    | '/alerts'
     | '/audit'
+    | '/center'
     | '/center-children'
+    | '/center-map'
     | '/children'
     | '/dashboard'
     | '/forbidden'
+    | '/route-history'
     | '/login'
     | '/register'
     | '/zones/$id'
@@ -181,11 +226,15 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/_authenticated/access-audit'
+    | '/_authenticated/alerts'
     | '/_authenticated/audit'
+    | '/_authenticated/center'
     | '/_authenticated/center-children'
+    | '/_authenticated/center-map'
     | '/_authenticated/children'
     | '/_authenticated/dashboard'
     | '/_authenticated/forbidden'
+    | '/_authenticated/route-history'
     | '/_public/login'
     | '/_public/register'
     | '/_authenticated/zones/$id'
@@ -231,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/route-history': {
+      id: '/_authenticated/route-history'
+      path: '/route-history'
+      fullPath: '/route-history'
+      preLoaderRoute: typeof AuthenticatedRouteHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/forbidden': {
       id: '/_authenticated/forbidden'
       path: '/forbidden'
@@ -252,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChildrenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/center-map': {
+      id: '/_authenticated/center-map'
+      path: '/center-map'
+      fullPath: '/center-map'
+      preLoaderRoute: typeof AuthenticatedCenterMapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/center-children': {
       id: '/_authenticated/center-children'
       path: '/center-children'
@@ -259,11 +322,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCenterChildrenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/center': {
+      id: '/_authenticated/center'
+      path: '/center'
+      fullPath: '/center'
+      preLoaderRoute: typeof AuthenticatedCenterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/audit': {
       id: '/_authenticated/audit'
       path: '/audit'
       fullPath: '/audit'
       preLoaderRoute: typeof AuthenticatedAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/alerts': {
+      id: '/_authenticated/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AuthenticatedAlertsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/access-audit': {
@@ -317,11 +394,15 @@ const AuthenticatedZonesIdRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccessAuditRoute: typeof AuthenticatedAccessAuditRoute
+  AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedCenterRoute: typeof AuthenticatedCenterRoute
   AuthenticatedCenterChildrenRoute: typeof AuthenticatedCenterChildrenRoute
+  AuthenticatedCenterMapRoute: typeof AuthenticatedCenterMapRoute
   AuthenticatedChildrenRoute: typeof AuthenticatedChildrenRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedForbiddenRoute: typeof AuthenticatedForbiddenRoute
+  AuthenticatedRouteHistoryRoute: typeof AuthenticatedRouteHistoryRoute
   AuthenticatedZonesIdRoute: typeof AuthenticatedZonesIdRouteWithChildren
   AuthenticatedZonesCreateRoute: typeof AuthenticatedZonesCreateRoute
   AuthenticatedZonesIndexRoute: typeof AuthenticatedZonesIndexRoute
@@ -329,11 +410,15 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccessAuditRoute: AuthenticatedAccessAuditRoute,
+  AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedCenterRoute: AuthenticatedCenterRoute,
   AuthenticatedCenterChildrenRoute: AuthenticatedCenterChildrenRoute,
+  AuthenticatedCenterMapRoute: AuthenticatedCenterMapRoute,
   AuthenticatedChildrenRoute: AuthenticatedChildrenRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedForbiddenRoute: AuthenticatedForbiddenRoute,
+  AuthenticatedRouteHistoryRoute: AuthenticatedRouteHistoryRoute,
   AuthenticatedZonesIdRoute: AuthenticatedZonesIdRouteWithChildren,
   AuthenticatedZonesCreateRoute: AuthenticatedZonesCreateRoute,
   AuthenticatedZonesIndexRoute: AuthenticatedZonesIndexRoute,

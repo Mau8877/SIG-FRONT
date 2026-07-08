@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { Hand, PenTool } from "lucide-react"
 
 import type { GeoJSONPolygon } from "../types"
 
@@ -11,16 +12,20 @@ type Props = {
   onChange: (polygon: GeoJSONPolygon | null) => void
   readOnly?: boolean
   height?: string
+  referenceZones?: { polygon: GeoJSONPolygon; nombre: string }[]
 }
 
-export function MapDrawer({ initialPolygon, onChange, readOnly = false, height = "360px" }: Props) {
+export function MapDrawer({ initialPolygon, onChange, readOnly = false, height = "360px", referenceZones }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<import("leaflet").Map | null>(null)
+  const clickHandlerRef = useRef<((e: import("leaflet").LeafletMouseEvent) => void) | null>(null)
   const polygonLayerRef = useRef<import("leaflet").Polygon | null>(null)
   const pointsRef = useRef<import("leaflet").LatLng[]>([])
   const previewLayerRef = useRef<import("leaflet").Polyline | null>(null)
   const markerLayersRef = useRef<import("leaflet").CircleMarker[]>([])
+  const referenceGroupRef = useRef<import("leaflet").LayerGroup | null>(null)
   const [leafletReady, setLeafletReady] = useState(false)
+  const [mode, setMode] = useState<"pan" | "draw">("draw")
   const [pointCount, setPointCount] = useState(0)
   const [searchQuery, setSearchQuery] = useState("")
   const [searching, setSearching] = useState(false)
@@ -78,9 +83,7 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
     }
 
     if (!readOnly) {
-      map.getContainer().style.cursor = "crosshair"
-
-      map.on("click", (e) => {
+      clickHandlerRef.current = (e) => {
         if (!L || !mapRef.current) return
 
         pointsRef.current.push(e.latlng)
@@ -108,14 +111,112 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
             dashArray: "6",
           }).addTo(mapRef.current)
         }
-      })
+      }
+
+      map.on("click", clickHandlerRef.current)
     }
 
     return () => {
       map.remove()
       mapRef.current = null
     }
-  }, [leafletReady])
+  }, [leafletReady, initialPolygon, readOnly])
+
+  useEffect(() => {
+    if (!L || !mapRef.current || !clickHandlerRef.current) return
+
+    const leaflet = L
+    const map = mapRef.current
+    const container = map.getContainer()
+    map.off("click", clickHandlerRef.current)
+
+    // Override cursor en el container y sus hijos interactivos
+    function setCursor(cursor: string) {
+      container.style.cursor = cursor
+      container.querySelectorAll<HTMLElement>(".leaflet-interactive, .leaflet-grab, .leaflet-container")
+        .forEach((el) => { el.style.cursor = cursor })
+    }
+
+    if (readOnly) {
+      setCursor("default")
+      return
+    }
+
+    if (mode === "draw") {
+      map.on("click", clickHandlerRef.current)
+      setCursor("crosshair")
+      return
+    }
+
+    // Modo pan: limpiar dibujo parcial si existe
+    if (pointsRef.current.length > 0 || previewLayerRef.current) {
+      previewLayerRef.current?.remove()
+      previewLayerRef.current = null
+      pointsRef.current = []
+      setPointCount(0)
+
+      const polygon = polygonLayerRef.current
+      markerLayersRef.current.forEach((marker) => marker.remove())
+      markerLayersRef.current = []
+
+      if (polygon) {
+        const rings = polygon.getLatLngs() as import("leaflet").LatLng[][]
+        const confirmedPoints = rings[0]
+        if (confirmedPoints) {
+          confirmedPoints.forEach((latlng) => {
+            const marker = leaflet.circleMarker(latlng, {
+              radius: 5,
+              color: "#ffffff",
+              weight: 2,
+              fillColor: "#22c55e",
+              fillOpacity: 1,
+            }).addTo(map)
+            markerLayersRef.current.push(marker)
+          })
+        }
+      }
+    }
+
+    setCursor("grab")
+  }, [mode, leafletReady, readOnly])
+
+  // Renderiza polígonos de referencia (zonas existentes) como fondo semi-transparente
+  useEffect(() => {
+    if (!L || !mapRef.current) return
+
+    // Limpiar capa anterior
+    referenceGroupRef.current?.remove()
+    referenceGroupRef.current = null
+
+    if (!referenceZones?.length) return
+
+    const leaflet = L
+    const group = leaflet.layerGroup()
+
+    referenceZones.forEach((zone) => {
+      const latlngs = zone.polygon.coordinates[0].map(
+        ([lng, lat]) => leaflet.latLng(lat, lng)
+      )
+      leaflet.polygon(latlngs, {
+        color: "#64748b",
+        fillColor: "#64748b",
+        fillOpacity: 0.2,
+        weight: 2,
+      })
+        .bindTooltip(zone.nombre, { sticky: true, direction: "top" })
+        .addTo(group)
+    })
+
+    group.addTo(mapRef.current)
+    group.eachLayer((layer) => {
+      ;(layer as import("leaflet").Path).bringToBack()
+    })
+    referenceGroupRef.current = group
+
+    return () => {
+      group.remove()
+    }
+  }, [referenceZones, leafletReady])
 
   function confirmPolygon() {
     if (!L || !mapRef.current) return
@@ -214,6 +315,35 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
         </div>
       )}
 
+      {!readOnly && (
+        <div className="flex gap-1 pb-2">
+          <button
+            type="button"
+            onClick={() => setMode("pan")}
+            title="Arrastrar mapa"
+            className={`rounded-md p-2 transition-colors ${
+              mode === "pan"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-accent"
+            }`}
+          >
+            <Hand className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("draw")}
+            title="Dibujar polígono"
+            className={`rounded-md p-2 transition-colors ${
+              mode === "draw"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-accent"
+            }`}
+          >
+            <PenTool className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
       {searchError && (
         <p className="text-sm text-destructive">{searchError}</p>
       )}
@@ -221,11 +351,7 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
       <div
         ref={containerRef}
         style={{ height }}
-        className={`w-full rounded-lg border border-border overflow-hidden ${
-          !readOnly
-            ? "[&_.leaflet-container]:cursor-crosshair! [&_.leaflet-interactive]:cursor-crosshair! [&_.leaflet-grab]:cursor-crosshair!"
-            : ""
-        }`}
+        className="w-full rounded-lg border border-border overflow-hidden"
       />
 
       {!readOnly && (
@@ -236,7 +362,7 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
               : `📍 ${pointCount} punto${pointCount !== 1 ? "s" : ""} marcado${pointCount !== 1 ? "s" : ""}. Mínimo 3 para confirmar el perímetro.`}
           </p>
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            {pointCount >= 3 && (
+            {mode === "draw" && pointCount >= 3 && (
               <button
                 type="button"
                 onClick={confirmPolygon}
@@ -245,7 +371,7 @@ export function MapDrawer({ initialPolygon, onChange, readOnly = false, height =
                 ✓ Confirmar zona
               </button>
             )}
-            {pointCount > 0 && (
+            {mode === "draw" && pointCount > 0 && (
               <button
                 type="button"
                 onClick={clearPolygon}

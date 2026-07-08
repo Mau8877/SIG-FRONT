@@ -10,14 +10,16 @@ import {
 } from "@/components/ui/card"
 import { getApiErrorMessage } from "@/src/lib/apiError"
 
-import { useCreateZonaMutation } from "../api/zonesApi"
+import { useCreateZonaMutation, useGetZonasQuery } from "../api/zonesApi"
 import { ZonaForm } from "../components/ZonaForm"
 import type { ZonaPayload } from "../types"
 
 export function ZonaCreateScreen() {
   const navigate = useNavigate()
   const [createZona, { isLoading }] = useCreateZonaMutation()
+  const { data: zonasData } = useGetZonasQuery({ includeInactive: false })
   const [error, setError] = useState<string | null>(null)
+  const referenceZones = zonasData?.results?.map((z) => ({ polygon: z.poligono, nombre: z.nombre })) ?? []
 
   async function handleCreate(values: ZonaPayload) {
     setError(null)
@@ -58,6 +60,7 @@ export function ZonaCreateScreen() {
             onCancel={() => void navigate({ to: "/zones" })}
             onSubmit={handleCreate}
             mapHeight="520px"
+            referenceZones={referenceZones}
           />
         </CardContent>
       </Card>

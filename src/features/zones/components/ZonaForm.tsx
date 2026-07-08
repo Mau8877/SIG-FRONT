@@ -14,9 +14,10 @@ type Props = {
   onSubmit: (values: ZonaPayload) => void
   onCancel: () => void
   mapHeight?: string
+  referenceZones?: { polygon: GeoJSONPolygon; nombre: string }[]
 }
 
-export function ZonaForm({ initialValues, submitLabel, isSubmitting, onSubmit, onCancel, mapHeight = "520px" }: Props) {
+export function ZonaForm({ initialValues, submitLabel, isSubmitting, onSubmit, onCancel, mapHeight = "520px", referenceZones }: Props) {
   const [nombre, setNombre] = useState(initialValues?.nombre ?? "")
   const [poligono, setPoligono] = useState<GeoJSONPolygon | null>(
     initialValues?.poligono ?? null
@@ -57,6 +58,7 @@ export function ZonaForm({ initialValues, submitLabel, isSubmitting, onSubmit, o
           initialPolygon={initialValues?.poligono ?? null}
           onChange={(poly) => setPoligono(poly)}
           height={mapHeight}
+          referenceZones={referenceZones}
         />
         {poligonoError && <p className="text-sm text-destructive">{poligonoError}</p>}
         {poligono && (
