@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
+import { ArrowLeft } from "lucide-react"
 
 import { authSessionStarted, useLoginMutation } from "@/src/features/auth"
 import { getApiErrorMessage } from "@/src/lib/apiError"
@@ -46,6 +47,13 @@ export function LoginScreen() {
 
   return (
     <div className="grid h-svh overflow-hidden bg-background text-foreground lg:grid-cols-[55fr_45fr]">
+      <Link
+        to="/"
+        className="fixed left-4 top-4 z-10 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30 sm:left-6 sm:top-6"
+      >
+        <ArrowLeft className="size-4" />
+        Volver al inicio
+      </Link>
       <LoginBrandPanel />
       <main className="flex h-svh min-w-0 items-center justify-center overflow-hidden px-5 py-5 sm:px-8 lg:px-12">
         <LoginForm
