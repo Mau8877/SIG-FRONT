@@ -1,11 +1,24 @@
 import { appApi } from "@/src/store/api"
 import type { PaginatedResponse } from "@/src/types/api"
 
-import type { Nino, NinoPayload } from "../types"
+import type {
+  AssignCenterPayload,
+  CentroEducativoSelection,
+  Nino,
+  NinoPayload,
+} from "../types"
 
 export type GetNinosParams = {
   page?: number
   includeInactive?: boolean
+}
+
+export type GetCentersParams = {
+  page?: number
+}
+
+export type GetInstitutionChildrenParams = {
+  page?: number
 }
 
 export const childrenApi = appApi.injectEndpoints({
@@ -32,6 +45,62 @@ export const childrenApi = appApi.injectEndpoints({
     getNino: builder.query<Nino, number>({
       query: (id) => `/children/ninos/${id}/`,
       providesTags: (_result, _error, id) => [{ type: "Nino", id }],
+    }),
+    getCenters: builder.query<PaginatedResponse<CentroEducativoSelection>, GetCentersParams | void>({
+      query: (params) => ({
+        url: "/institutions/centers/",
+        params: {
+          page: params?.page ?? 1,
+        },
+      }),
+      providesTags: [{ type: "Center", id: "LIST" }],
+    }),
+    assignNinoCenter: builder.mutation<
+      Nino,
+      { id: number; body: AssignCenterPayload }
+    >({
+      query: ({ id, body }) => ({
+        url: `/children/ninos/${id}/assign-center/`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Nino", id },
+        { type: "Nino", id: "LIST" },
+        { type: "InstitutionChildren", id: "LIST" },
+      ],
+    }),
+    removeNinoCenter: builder.mutation<unknown, number>({
+      query: (id) => ({
+        url: `/children/ninos/${id}/remove-center/`,
+        method: "POST",
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Nino", id },
+        { type: "Nino", id: "LIST" },
+        { type: "InstitutionChildren", id: "LIST" },
+      ],
+    }),
+    getInstitutionChildren: builder.query<
+      PaginatedResponse<Nino>,
+      GetInstitutionChildrenParams | void
+    >({
+      query: (params) => ({
+        url: "/institutions/children/",
+        params: {
+          page: params?.page ?? 1,
+        },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              { type: "InstitutionChildren", id: "LIST" },
+              ...result.results.map((nino) => ({
+                type: "Nino" as const,
+                id: getNinoId(nino),
+              })),
+            ]
+          : [{ type: "InstitutionChildren", id: "LIST" }],
     }),
     createNino: builder.mutation<Nino, NinoPayload>({
       query: (body) => ({
@@ -76,10 +145,14 @@ export const childrenApi = appApi.injectEndpoints({
 })
 
 export const {
+  useAssignNinoCenterMutation,
   useCreateNinoMutation,
   useDeactivateNinoMutation,
+  useGetCentersQuery,
+  useGetInstitutionChildrenQuery,
   useGetNinoQuery,
   useGetNinosQuery,
+  useRemoveNinoCenterMutation,
   useReactivateNinoMutation,
   useUpdateNinoMutation,
 } = childrenApi

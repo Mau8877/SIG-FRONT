@@ -38,7 +38,10 @@ import {
   useReactivateNinoMutation,
   useUpdateNinoMutation,
 } from "../api/childrenApi"
+import { AssignCenterDialog } from "../components/AssignCenterDialog"
+import { ChildCenterInfo } from "../components/ChildCenterInfo"
 import { NinoForm } from "../components/NinoForm"
+import { RemoveCenterDialog } from "../components/RemoveCenterDialog"
 import type { Nino, NinoPayload } from "../types"
 
 export function ChildrenScreen() {
@@ -47,7 +50,11 @@ export function ChildrenScreen() {
   const [editingNino, setEditingNino] = useState<Nino | null>(null)
   const [showCreate, setShowCreate] = useState(false)
   const [deactivateTarget, setDeactivateTarget] = useState<Nino | null>(null)
+  const [assignCenterTarget, setAssignCenterTarget] = useState<Nino | null>(null)
+  const [removeCenterTarget, setRemoveCenterTarget] = useState<Nino | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [removeCenterError, setRemoveCenterError] = useState<string | null>(null)
   const { data, isLoading, isError, refetch } = useGetNinosQuery({
     page,
     includeInactive,
@@ -61,6 +68,7 @@ export function ChildrenScreen() {
 
   async function handleCreate(values: NinoPayload) {
     setError(null)
+    setSuccess(null)
 
     try {
       await createNino(values).unwrap()
@@ -76,6 +84,7 @@ export function ChildrenScreen() {
     }
 
     setError(null)
+    setSuccess(null)
 
     try {
       await updateNino({ id: getNinoId(editingNino), body: values }).unwrap()
@@ -91,6 +100,7 @@ export function ChildrenScreen() {
     }
 
     setError(null)
+    setSuccess(null)
 
     try {
       await deactivateNino(getNinoId(deactivateTarget)).unwrap()
@@ -102,6 +112,7 @@ export function ChildrenScreen() {
 
   async function handleReactivate(nino: Nino) {
     setError(null)
+    setSuccess(null)
 
     try {
       await reactivateNino(getNinoId(nino)).unwrap()
@@ -140,6 +151,11 @@ export function ChildrenScreen() {
           {error}
         </p>
       ) : null}
+      {success ? (
+        <p className="rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-sm text-success-foreground">
+          {success}
+        </p>
+      ) : null}
 
       {isLoading ? <ChildrenSkeleton /> : null}
 
@@ -175,6 +191,11 @@ export function ChildrenScreen() {
             onEdit={() => setEditingNino(nino)}
             onDeactivate={() => setDeactivateTarget(nino)}
             onReactivate={() => void handleReactivate(nino)}
+            onAssignCenter={() => setAssignCenterTarget(nino)}
+            onRemoveCenter={() => {
+              setRemoveCenterError(null)
+              setRemoveCenterTarget(nino)
+            }}
           />
         ))}
       </div>
@@ -215,7 +236,7 @@ export function ChildrenScreen() {
             <NinoForm
               initialValues={{
                 nombre: editingNino.nombre,
-                fecha_nacimiento: editingNino.fecha_nacimiento,
+                fecha_nacimiento: editingNino.fecha_nacimiento ?? "",
                 foto_url: editingNino.foto_url ?? "",
               }}
               submitLabel="Guardar cambios"
@@ -254,6 +275,28 @@ export function ChildrenScreen() {
           </AlertDialogContent>
         ) : null}
       </AlertDialog>
+
+      <AssignCenterDialog
+        nino={assignCenterTarget}
+        open={Boolean(assignCenterTarget)}
+        onOpenChange={(open) => !open && setAssignCenterTarget(null)}
+        onSuccess={(message) => {
+          setError(null)
+          setSuccess(message)
+        }}
+      />
+
+      <RemoveCenterDialog
+        nino={removeCenterTarget}
+        error={removeCenterError}
+        open={Boolean(removeCenterTarget)}
+        onOpenChange={(open) => !open && setRemoveCenterTarget(null)}
+        onError={setRemoveCenterError}
+        onSuccess={(message) => {
+          setError(null)
+          setSuccess(message)
+        }}
+      />
     </section>
   )
 }
@@ -264,12 +307,16 @@ function NinoCard({
   onEdit,
   onDeactivate,
   onReactivate,
+  onAssignCenter,
+  onRemoveCenter,
 }: {
   nino: Nino
   reactivating: boolean
   onEdit: () => void
   onDeactivate: () => void
   onReactivate: () => void
+  onAssignCenter: () => void
+  onRemoveCenter: () => void
 }) {
   const active = nino.activo ?? true
 
@@ -286,19 +333,36 @@ function NinoCard({
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={onEdit}>
-          Editar
-        </Button>
-        {active ? (
-          <Button variant="destructive" onClick={onDeactivate}>
-            Dar de baja
+      <CardContent className="space-y-4">
+        <ChildCenterInfo nino={nino} />
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={onEdit}>
+            Editar
           </Button>
-        ) : (
-          <Button variant="secondary" onClick={onReactivate} disabled={reactivating}>
-            {reactivating ? "Reactivando..." : "Reactivar"}
-          </Button>
-        )}
+          {nino.centro ? (
+            <>
+              <Button variant="secondary" onClick={onAssignCenter}>
+                Cambiar centro
+              </Button>
+              <Button variant="outline" onClick={onRemoveCenter}>
+                Quitar centro
+              </Button>
+            </>
+          ) : (
+            <Button variant="secondary" onClick={onAssignCenter}>
+              Vincular a centro
+            </Button>
+          )}
+          {active ? (
+            <Button variant="destructive" onClick={onDeactivate}>
+              Dar de baja
+            </Button>
+          ) : (
+            <Button variant="secondary" onClick={onReactivate} disabled={reactivating}>
+              {reactivating ? "Reactivando..." : "Reactivar"}
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   )

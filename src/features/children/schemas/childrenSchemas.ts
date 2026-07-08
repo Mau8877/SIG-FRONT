@@ -16,3 +16,7 @@ export const ninoSchema = z.object({
 })
 
 export type NinoFormValues = z.infer<typeof ninoSchema>
+
+export const assignCenterSchema = z.object({
+  centro_id: z.number().int().positive("Selecciona un centro educativo."),
+})
