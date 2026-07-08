@@ -44,7 +44,10 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     label: "Zonas Seguras",
     route: "/zones",
     icon: MapPin,
-    allowedRoles: [USER_ROLES.TUTOR],
+    allowedRoles: [
+      USER_ROLES.TUTOR,
+      USER_ROLES.ADMIN_CENTRO,
+    ],
   },
   {
     label: "Bitacora General",

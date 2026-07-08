@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Baby, BookOpenCheck, School, UsersRound } from "lucide-react"
+import { Baby, BookOpenCheck, MapPin, School, UsersRound } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useGetNinosQuery } from "@/src/features/children"
@@ -29,7 +29,7 @@ export function TutorDashboard() {
         icon={UsersRound}
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardStatCard
           title="Niños registrados"
           description="Total real registrado en tu cuenta."
@@ -54,6 +54,16 @@ export function TutorDashboard() {
           action={
             <StatActionButton render={<Link to="/children" />}>
               Gestionar vínculos
+            </StatActionButton>
+          }
+        />
+        <DashboardStatCard
+          title="Zonas seguras"
+          description="Perímetros de vigilancia geográfica familiar."
+          icon={MapPin}
+          action={
+            <StatActionButton render={<Link to="/zones" />}>
+              Ver Mis Zonas
             </StatActionButton>
           }
         />
@@ -87,6 +97,12 @@ export function TutorDashboard() {
             description: "Consulta y administra los perfiles registrados.",
             to: "/children",
             icon: Baby,
+          },
+          {
+            label: "Mis Zonas Seguras",
+            description: "Configura áreas geográficas y horarios de vigilancia.",
+            to: "/zones",
+            icon: MapPin,
           },
           {
             label: "Registrar Niño",

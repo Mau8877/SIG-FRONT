@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { ClipboardList, School, UsersRound } from "lucide-react"
+import { ClipboardList, MapPin, School, UsersRound } from "lucide-react"
 
 import { useGetInstitutionChildrenQuery } from "@/src/features/children"
 
@@ -28,7 +28,7 @@ export function AdminCenterDashboard() {
         icon={School}
       />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <DashboardStatCard
           title="Niños vinculados"
           description="Niños activos actualmente asociados al centro."
@@ -43,6 +43,16 @@ export function AdminCenterDashboard() {
           action={
             <StatActionButton render={<Link to="/center-children" />}>
               Ver niños
+            </StatActionButton>
+          }
+        />
+        <DashboardStatCard
+          title="Zonas institucionales"
+          description="Perímetros y áreas seguras configuradas para el centro."
+          icon={MapPin}
+          action={
+            <StatActionButton render={<Link to="/zones" />}>
+              Ver Zonas
             </StatActionButton>
           }
         />
@@ -70,6 +80,12 @@ export function AdminCenterDashboard() {
             description: "Consulta la lista completa en modo solo lectura.",
             to: "/center-children",
             icon: ClipboardList,
+          },
+          {
+            label: "Zonas Institucionales",
+            description: "Monitorea y configura los perímetros de seguridad del centro.",
+            to: "/zones",
+            icon: MapPin,
           },
         ]}
       />
